@@ -1,0 +1,85 @@
+package com.twb.controller;
+
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.HashMap;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+import javax.validation.Valid;
+
+import com.twb.model.Employee;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import com.twb.exception.ResourceNotFoundException;
+import com.twb.repository.EmployeeRepository;
+
+@CrossOrigin(origins = "http://localhost:4200")
+@RestController
+@RequestMapping("/api/v1/employees")
+public class EmployeeController {
+	@Autowired
+	private EmployeeRepository employeeRepository;
+
+	@GetMapping()
+	public List<Employee> getAllEmployees() {
+		return employeeRepository.findAll();
+	}
+
+	@GetMapping("/{id}")
+	public ResponseEntity<Employee> getEmployeeById(@PathVariable(value = "id") Long employeeId)
+			throws ResourceNotFoundException {
+		Employee employee = employeeRepository.findById(employeeId)
+				.orElseThrow(() -> new ResourceNotFoundException("Employee not found for this id :: " + employeeId));
+		return ResponseEntity.ok().body(employee);
+	}
+
+	@PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Employee> createEmployee(@Valid @RequestBody Employee employee) throws URISyntaxException {
+
+		Employee result = employeeRepository.save(employee);
+		return ResponseEntity.created(new URI("/api/v1/employees" + result.getId())).body(result);
+	}
+
+	@PutMapping("/{id}")
+	public ResponseEntity<Employee> updateEmployee(@PathVariable(value = "id") Long employeeId,
+			@Valid @RequestBody Employee employeeDetails) throws ResourceNotFoundException {
+		Employee employee = employeeRepository.findById(employeeId)
+				.orElseThrow(() -> new ResourceNotFoundException("Employee not found for this id :: " + employeeId));
+
+		employee.setEmailId(employeeDetails.getEmailId());
+		employee.setLastName(employeeDetails.getLastName());
+		employee.setFirstName(employeeDetails.getFirstName());
+		final Employee updatedEmployee = employeeRepository.save(employee);
+		return ResponseEntity.ok(updatedEmployee);
+	}
+
+	@DeleteMapping("/{id}")
+	public Map<String, Boolean> deleteEmployee(@PathVariable(value = "id") Long employeeId)
+			throws ResourceNotFoundException {
+		Employee employee = employeeRepository.findById(employeeId)
+				.orElseThrow(() -> new ResourceNotFoundException("Employee not found for this id :: " + employeeId));
+
+		employeeRepository.delete(employee);
+		Map<String, Boolean> response = new HashMap<>();
+		response.put("deleted", Boolean.TRUE);
+		return response;
+	}
+
+	@GetMapping("/email")
+	public ResponseEntity<Employee> getEmployeeByEmail(@RequestParam String emailId) throws ResourceNotFoundException {
+		Employee employee = employeeRepository.findByEmailId(emailId)
+				.orElseThrow(() -> new ResourceNotFoundException("Employee not found for this emailId :: " + emailId));
+		return ResponseEntity.ok().body(employee);
+	}
+
+	@GetMapping("/name")
+	public List<Employee> getByFistName(@RequestParam String name) {
+		return employeeRepository.findAllByName(name);
+	}
+}
