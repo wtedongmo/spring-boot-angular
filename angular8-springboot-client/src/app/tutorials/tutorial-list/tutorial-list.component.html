@@ -1,0 +1,48 @@
+<div class="panel panel-primary">
+  <div class="col-md-8">
+    <div class="input-group mb-3">
+      <input
+        type="text"
+        class="form-control"
+        placeholder="Search by title"
+        [(ngModel)]="name"
+      />
+      <div class="input-group-append">
+        <button
+          class="btn btn-outline-secondary"
+          type="button"
+          (click)="searchByTitle(name)"
+        >
+          Search
+        </button>
+      </div>
+    </div>
+  </div>
+  <div class="panel-heading">
+    <h2>Tutorial List</h2>
+  </div>
+  <div class="panel-body">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Description</th>
+          <th>Published</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let tutorial of tutorials">
+          <td>{{tutorial.title}}</td>
+          <td>{{tutorial.description}}</td>
+          <td>{{tutorial.published}}</td>
+          <td><button (click)="deleteTutorial(tutorial.id)" class="btn btn-danger">Delete</button>
+              <button (click)="updateTutorial(tutorial.id)" class="btn btn-info" style="margin-left: 10px">Update</button>
+              <button (click)="tutorialDetails(tutorial.id)" class="btn btn-info" style="margin-left: 10px">Details</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+

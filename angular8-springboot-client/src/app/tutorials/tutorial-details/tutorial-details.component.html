@@ -1,0 +1,20 @@
+<h2>Tutorial Details</h2> 
+
+<hr/>
+<div *ngIf="tutorial">
+  <div>
+    <label><b>Title: </b></label> {{tutorial.title}}
+  </div>
+  <div>
+    <label><b>Description: </b></label> {{tutorial.description}}
+  </div>
+  <div>
+    <label><b>Published: </b></label> {{tutorial.published}}
+  </div>  
+</div>
+
+<br>
+<br>
+<button (click)="list()" class="btn btn-primary">Back to Tutorial List</button><br>
+
+
